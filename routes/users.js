@@ -40,29 +40,23 @@ passport.deserializeUser(function(id, done) {
 });
 
 passport.use(new LocalStrategy(function(username, password, done){
-    User.getUserByUsername(username, funtion(err, user){
-      if(err) throw err;
-      if(!user)
-      {
-        return done(null, false,{message:'Unknown User'});
+  User.getUserByUsername(username, function(err, user){
+    if(err) throw err;
+    if(!user){
+      return done(null, false, {message: 'Unknown User'});
+    }
+
+    User.comparePassword(password, user.password, function(err, isMatch){
+      if(err) return done(err);
+      if(isMatch){
+        return done(null, user);
+      } else {
+        return done(null, false, {message:'Invalid Password'});
       }
-
-      User.comparePassword(password, user.password, function(err, isMatch){
-        if(err) return done(err);
-        if(isMath)
-        {
-          return done(null, user); // if the password matches
-        }
-        else // if not return and notify the user
-        {
-          return done(null, false, {message: 'Invalid Password'});
-        }
-
-      });
-
     });
-
+  });
 }));
+
 
 router.post('/register', upload.single('profileimage') , function(req, res, next) {
   var name = req.body.name;
